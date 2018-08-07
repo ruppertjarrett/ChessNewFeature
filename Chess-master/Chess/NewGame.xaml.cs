@@ -12,6 +12,7 @@ namespace Chess
     {
         private Logic game;
         private Color colorChecked;
+        private Gamemode gamemodeChecked;
 
         public NewGame(Logic l)
         {
@@ -65,6 +66,16 @@ namespace Chess
             }
             else //Not Network Game
             {
+                if (regularBtn.IsChecked == true)
+                {
+                    gamemodeChecked = Chess.Gamemode.Regular;
+                }
+                else
+                {
+                    gamemodeChecked = Chess.Gamemode.Chess960;
+
+                }
+                game.gamemode = gamemodeChecked;
                 game.setBoardForNewGame();
             }
 
@@ -92,7 +103,6 @@ namespace Chess
                 game.movablePieceSelected = false;
                 opponentAndRotate();
                 game.onBottom = game.switchTeam(game.opponent);
-
                 if (game.opponent == Chess.Color.Dark)
                 {
                     game.ready = true;
@@ -173,6 +183,16 @@ namespace Chess
             {
                 NewGameWindow.horse.FlowDirection = FlowDirection.RightToLeft;
             }
+        }
+
+        private void regularBtn_Checked(object sender, RoutedEventArgs e)
+        {
+            gamemodeChecked = Gamemode.Regular;
+        }
+
+        private void newBtn_Checked(object sender, RoutedEventArgs e)
+        {
+            gamemodeChecked = Gamemode.Chess960;
         }
     }
 

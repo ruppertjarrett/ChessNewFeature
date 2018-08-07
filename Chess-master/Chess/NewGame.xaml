@@ -26,9 +26,13 @@
             <Label Content="Port" Height="20" Canvas.Left="10" Canvas.Top="55" Width="110" Padding="0"/>
             <TextBox x:Name="portBox" Height="20" Canvas.Left="10" Canvas.Top="75" Width="110" Padding="0" PreviewTextInput="portBox_PreviewTextInput"/>
         </Canvas>
-        <Canvas x:Name="Color" Height="111" Margin="0,110,36,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="115" IsEnabled="{Binding ElementName=onePlayerBtn, Path=IsChecked}">
+        <Canvas x:Name="Color" Height="55" Margin="0,110,36,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="115" IsEnabled="{Binding ElementName=onePlayerBtn, Path=IsChecked}">
             <RadioButton x:Name="lightBtn" Content="Play as light" Height="20" Canvas.Left="10" Canvas.Top="10" Width="95" IsChecked="True" Padding="4,0,0,0"/>
             <RadioButton x:Name="darkBtn" Content="Play as dark" Height="20" Canvas.Left="10" Canvas.Top="35" Width="95" Padding="4,0,0,0"/>
+        </Canvas>
+        <Canvas x:Name="GameMode" Height="55" Margin="0,165,36,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="115" IsEnabled="True">
+            <RadioButton x:Name="regularBtn" Content="Play Chess" Height="20" Canvas.Left="10" Canvas.Top="10" Width="95" Checked="regularBtn_Checked" IsChecked="True" Padding="4,0,0,0"/>
+            <RadioButton x:Name="newBtn" Content="Play Chess960" Height="20" Canvas.Left="10" Canvas.Top="35" Width="95" Checked="newBtn_Checked"  Padding="4,0,0,0"/>
         </Canvas>
         <Button x:Name="okBtn" Content="OK" Margin="66,0,0,25" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="80" IsDefault="True" Click="okBtn_Click"/>
         <Button x:Name="cancelBtn" Content="Cancel" Margin="0,0,71,25" HorizontalAlignment="Right" Width="80" Height="20" VerticalAlignment="Bottom" IsCancel="True" Click="cancelBtn_Click"/>

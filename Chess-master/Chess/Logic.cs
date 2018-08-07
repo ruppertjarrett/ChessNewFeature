@@ -34,6 +34,13 @@ namespace Chess
         King
     }
 
+    public enum Gamemode
+    {
+        None,
+        Regular,
+        Chess960
+    }
+
     [Serializable]
     public class Logic
     {
@@ -47,6 +54,7 @@ namespace Chess
         public Color opponent;                  //color of computer or 2nd player
         public Color offensiveTeam;             //which side is on the offense
         public Color onBottom = Color.Light;    //which team is on the bottom of the screen
+        public Gamemode gamemode;
         public int difficulty;                  //difficulty level
         public bool ready;                      //blocks functionality for unwanted circumstances
         private coordinate prevSelected;        //where the cursor clicked previously
@@ -94,6 +102,7 @@ namespace Chess
             //contains all the information needed to save the game
 
             public piece[,] sBoard { get; private set; }
+            public Gamemode sGameMode { get; private set; }
             public Color sOffensiveTeam { get; private set; }
             public Color sOpponent { get; private set; }
             public Color sOnBottom { get; set; }
@@ -110,10 +119,11 @@ namespace Chess
             public int sSizeX { get; private set; }
             public int sSizeY { get; private set; }
 
-            public saveData(piece[,] _board, Color _offensiveTeam, Color _opponent, Color _onBottom, string _theme, bool _onePlayer, bool _twoPlayer,
+            public saveData(piece[,] _board, Gamemode _gamemode, Color _offensiveTeam, Color _opponent, Color _onBottom, string _theme, bool _onePlayer, bool _twoPlayer,
                 bool _network, int _difficulty, bool _lastMove, bool _saveGame, bool _ready, bool _rotate, double _rDuration, int _sizeX, int _sizeY)
             {
                 this.sBoard = _board;
+                this.sGameMode = _gamemode;
                 this.sOffensiveTeam = _offensiveTeam;
                 this.sOpponent = _opponent;
                 this.sOnBottom = _onBottom;
@@ -532,85 +542,211 @@ namespace Chess
         public void setBoardForNewGame()
         {
             //Sets arrays in starting position
+                pieceArray = new piece[8, 8];
 
-            pieceArray = new piece[8, 8];
-
-            for (int y = 0; y < 8; y++)
-            {
-                for (int x = 0; x < 8; x++)
+                for (int y = 0; y < 8; y++)
                 {
-                    if (y == 0)
+                    for (int x = 0; x < 8; x++)
                     {
-                        pieceArray[x, 0].color = Color.Light;
-                    }
+                        if (y == 0)
+                        {
+                            pieceArray[x, 0].color = Color.Light;
+                        }
 
-                    else if (y == 1)
-                    {
-                        pieceArray[x, 1].color = Color.Light;
-                        pieceArray[x, 1].job = Job.Pawn;
-                        pieceArray[x, 1].virgin = true;
-                        displayArray[x, 1].top.Source = matchPicture(pieceArray[x, 1]);
-                    }
+                        else if (y == 1)
+                        {
+                            pieceArray[x, 1].color = Color.Light;
+                            pieceArray[x, 1].job = Job.Pawn;
+                            pieceArray[x, 1].virgin = true;
+                            displayArray[x, 1].top.Source = matchPicture(pieceArray[x, 1]);
+                        }
 
-                    else if (y == 6)
-                    {
-                        pieceArray[x, 6].color = Color.Dark;
-                        pieceArray[x, 6].job = Job.Pawn;
-                        pieceArray[x, 6].virgin = true;
-                        displayArray[x, 6].top.Source = matchPicture(pieceArray[x, 6]);
-                    }
+                        else if (y == 6)
+                        {
+                            pieceArray[x, 6].color = Color.Dark;
+                            pieceArray[x, 6].job = Job.Pawn;
+                            pieceArray[x, 6].virgin = true;
+                            displayArray[x, 6].top.Source = matchPicture(pieceArray[x, 6]);
+                        }
 
-                    else if (y == 7)
-                    {
-                        pieceArray[x, 7].color = Color.Dark;
-                    }
+                        else if (y == 7)
+                        {
+                            pieceArray[x, 7].color = Color.Dark;
+                        }
 
-                    else
-                    {
-                        displayArray[x, y].top.Source = null;
+                        else
+                        {
+                            displayArray[x, y].top.Source = null;
+                        }
                     }
                 }
+                pieceArray[0, 0].virgin = true;
+                pieceArray[4, 0].virgin = true;
+                pieceArray[7, 0].virgin = true;
+                pieceArray[0, 7].virgin = true;
+                pieceArray[4, 7].virgin = true;
+                pieceArray[7, 7].virgin = true;
+
+            if (gamemode == Gamemode.Regular)
+            {
+                pieceArray[0, 0].job = Job.Rook;
+                pieceArray[1, 0].job = Job.Knight;
+                pieceArray[2, 0].job = Job.Bishop;
+                pieceArray[3, 0].job = Job.Queen;
+                pieceArray[4, 0].job = Job.King;
+                pieceArray[5, 0].job = Job.Bishop;
+                pieceArray[6, 0].job = Job.Knight;
+                pieceArray[7, 0].job = Job.Rook;
+                pieceArray[0, 7].job = Job.Rook;
+                pieceArray[1, 7].job = Job.Knight;
+                pieceArray[2, 7].job = Job.Bishop;
+                pieceArray[3, 7].job = Job.Queen;
+                pieceArray[4, 7].job = Job.King;
+                pieceArray[5, 7].job = Job.Bishop;
+                pieceArray[6, 7].job = Job.Knight;
+                pieceArray[7, 7].job = Job.Rook;
+
+                displayArray[0, 0].top.Source = lRook;
+                displayArray[1, 0].top.Source = lKnight;
+                displayArray[2, 0].top.Source = lBishop;
+                displayArray[3, 0].top.Source = lQueen;
+                displayArray[4, 0].top.Source = lKing;
+                displayArray[5, 0].top.Source = lBishop;
+                displayArray[6, 0].top.Source = lKnight;
+                displayArray[7, 0].top.Source = lRook;
+                displayArray[0, 7].top.Source = dRook;
+                displayArray[1, 7].top.Source = dKnight;
+                displayArray[2, 7].top.Source = dBishop;
+                displayArray[3, 7].top.Source = dQueen;
+                displayArray[4, 7].top.Source = dKing;
+                displayArray[5, 7].top.Source = dBishop;
+                displayArray[6, 7].top.Source = dKnight;
+                displayArray[7, 7].top.Source = dRook;
             }
-            pieceArray[0, 0].virgin = true;
-            pieceArray[4, 0].virgin = true;
-            pieceArray[7, 0].virgin = true;
-            pieceArray[0, 7].virgin = true;
-            pieceArray[4, 7].virgin = true;
-            pieceArray[7, 7].virgin = true;
+            else
+            {
+                Random random = new Random();
+                int LightBishop = (random.Next(0, 3)) * 2;
+                int DarkBishop = 0;
+                int KnightOne;
+                int KnightTwo;
+                int RookOne;
+                int RookTwo;
+                int King;
+                int Queen;
 
-            pieceArray[0, 0].job = Job.Rook;
-            pieceArray[1, 0].job = Job.Knight;
-            pieceArray[2, 0].job = Job.Bishop;
-            pieceArray[3, 0].job = Job.Queen;
-            pieceArray[4, 0].job = Job.King;
-            pieceArray[5, 0].job = Job.Bishop;
-            pieceArray[6, 0].job = Job.Knight;
-            pieceArray[7, 0].job = Job.Rook;
-            pieceArray[0, 7].job = Job.Rook;
-            pieceArray[1, 7].job = Job.Knight;
-            pieceArray[2, 7].job = Job.Bishop;
-            pieceArray[3, 7].job = Job.Queen;
-            pieceArray[4, 7].job = Job.King;
-            pieceArray[5, 7].job = Job.Bishop;
-            pieceArray[6, 7].job = Job.Knight;
-            pieceArray[7, 7].job = Job.Rook;
+                if (LightBishop % 2 == 0)
+                {
+                    bool allowed = false;
+                    do
+                    {
+                        DarkBishop = random.Next(0, 8);
+                        if (DarkBishop % 2 != 0)
+                        {
+                            allowed = true;
+                        }
+                    } while (!allowed);
+                }
+                bool knightOneAllowed = false;
+                do
+                {
+                    KnightOne = random.Next(0, 8);
+                    if (KnightOne != DarkBishop && KnightOne != LightBishop)
+                    {
+                        knightOneAllowed = true;
+                    }
+                } while (!knightOneAllowed);
+                bool knightTwoAllowed = false;
+                do
+                {
+                    KnightTwo = random.Next(0, 8);
+                    if (KnightTwo != DarkBishop && KnightTwo != LightBishop && KnightTwo != KnightOne)
+                    {
+                        knightTwoAllowed = true;
+                    }
+                } while (!knightTwoAllowed);
+                bool queenAllowed = false;
+                do
+                {
+                    Queen = random.Next(0, 8);
+                    if (Queen != DarkBishop && Queen != LightBishop && Queen != KnightOne && Queen != KnightTwo)
+                    {
+                        queenAllowed = true;
+                    }
+                } while (!queenAllowed);
+                bool finalThree = false;
+                do
+                {
+                    bool rookOneAllowed = false;
+                    do
+                    {
+                        RookOne = random.Next(0, 8);
+                        if (RookOne != DarkBishop && RookOne != LightBishop && RookOne != KnightOne && RookOne != KnightTwo && RookOne != Queen)
+                        {
+                            rookOneAllowed = true;
+                        }
+                    } while (!rookOneAllowed);
+                    bool rookTwoAllowed = false;
+                    do
+                    {
+                        RookTwo = random.Next(0, 8);
+                        if (RookTwo != DarkBishop && RookTwo != LightBishop && RookTwo != KnightOne && RookTwo != KnightTwo && RookTwo != Queen && RookTwo != RookOne)
+                        {
+                            rookTwoAllowed = true;
+                        }
+                    } while (!rookTwoAllowed);
+                    bool kingAllowed = false;
+                    do
+                    {
+                        King = random.Next(0, 8);
+                        if (King != DarkBishop && King != LightBishop && King != KnightOne && King != KnightTwo && King != Queen && King != RookOne && King != RookTwo)
+                        {
+                            kingAllowed = true;
+                        }
+                    } while (!kingAllowed);
+                    if (King < RookOne && King > RookTwo)
+                    {
+                        finalThree = true;
+                    }
+                    else if (King > RookOne && King < RookTwo)
+                    {
+                        finalThree = true;
+                    }
+                } while (!finalThree);
+                pieceArray[RookOne, 0].job = Job.Rook;
+                pieceArray[KnightOne, 0].job = Job.Knight;
+                pieceArray[LightBishop, 0].job = Job.Bishop;
+                pieceArray[Queen, 0].job = Job.Queen;
+                pieceArray[King, 0].job = Job.King;
+                pieceArray[DarkBishop, 0].job = Job.Bishop;
+                pieceArray[KnightTwo, 0].job = Job.Knight;
+                pieceArray[RookTwo, 0].job = Job.Rook;
+                pieceArray[RookOne, 7].job = Job.Rook;
+                pieceArray[KnightOne, 7].job = Job.Knight;
+                pieceArray[LightBishop, 7].job = Job.Bishop;
+                pieceArray[Queen, 7].job = Job.Queen;
+                pieceArray[King, 7].job = Job.King;
+                pieceArray[DarkBishop, 7].job = Job.Bishop;
+                pieceArray[KnightTwo, 7].job = Job.Knight;
+                pieceArray[RookTwo, 7].job = Job.Rook;
 
-            displayArray[0, 0].top.Source = lRook;
-            displayArray[1, 0].top.Source = lKnight;
-            displayArray[2, 0].top.Source = lBishop;
-            displayArray[3, 0].top.Source = lQueen;
-            displayArray[4, 0].top.Source = lKing;
-            displayArray[5, 0].top.Source = lBishop;
-            displayArray[6, 0].top.Source = lKnight;
-            displayArray[7, 0].top.Source = lRook;
-            displayArray[0, 7].top.Source = dRook;
-            displayArray[1, 7].top.Source = dKnight;
-            displayArray[2, 7].top.Source = dBishop;
-            displayArray[3, 7].top.Source = dQueen;
-            displayArray[4, 7].top.Source = dKing;
-            displayArray[5, 7].top.Source = dBishop;
-            displayArray[6, 7].top.Source = dKnight;
-            displayArray[7, 7].top.Source = dRook;
+                displayArray[RookOne, 0].top.Source = lRook;
+                displayArray[KnightOne, 0].top.Source = lKnight;
+                displayArray[LightBishop, 0].top.Source = lBishop;
+                displayArray[Queen, 0].top.Source = lQueen;
+                displayArray[King, 0].top.Source = lKing;
+                displayArray[DarkBishop, 0].top.Source = lBishop;
+                displayArray[KnightTwo, 0].top.Source = lKnight;
+                displayArray[RookTwo, 0].top.Source = lRook;
+                displayArray[RookOne, 7].top.Source = dRook;
+                displayArray[KnightOne, 7].top.Source = dKnight;
+                displayArray[LightBishop, 7].top.Source = dBishop;
+                displayArray[Queen, 7].top.Source = dQueen;
+                displayArray[King, 7].top.Source = dKing;
+                displayArray[DarkBishop, 7].top.Source = dBishop;
+                displayArray[KnightTwo, 7].top.Source = dKnight;
+                displayArray[RookTwo, 7].top.Source = dRook;
+            }
         }
 
         private List<coordinate> getDarkPieces(piece[,] board)
@@ -1971,7 +2107,7 @@ namespace Chess
             }
 
             string theme = themeList[themeIndex];
-            saveData sData = new saveData(pieceArray, offensiveTeam, opponent, onBottom, theme, onePlayer, twoPlayer, networkGame, difficulty,
+            saveData sData = new saveData(pieceArray, gamemode, offensiveTeam, opponent, onBottom, theme, onePlayer, twoPlayer, networkGame, difficulty,
                 lastMove, saveGame, ready, rotate, rotationDuration, sizeX, sizeY);
 
             System.IO.Directory.CreateDirectory(dirPath);
@@ -2009,6 +2145,7 @@ namespace Chess
                         pieceArray = new piece[8, 8];
                         movablePieceSelected = false;
                         pieceArray = lData.sBoard;
+                        gamemode = lData.sGameMode;
                         offensiveTeam = lData.sOffensiveTeam;
                         opponent = lData.sOpponent;
                         onBottom = lData.sOnBottom;
